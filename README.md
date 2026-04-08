@@ -33,6 +33,10 @@ medical-equipment-manager/
 ├── equipos.py       # Equipment CRUD class
 └── incidencias.py   # Incidents CRUD class
 
+## REQUIREMENTS
+
+- Python 3.8 or higher
+
 ## How to Run
 
 Clone the repository and run:
