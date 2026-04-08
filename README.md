@@ -20,6 +20,8 @@ This project was built as a portfolio piece during my transition from **Biomedic
 - **Python 3.12** — OOP, modular architecture
 - **SQLite3** — relational database
 - **datetime** — automatic incident timestamps
+- **FastAPI** — REST API framework
+- **Uvicorn** — ASGI server
 
 ## Project Structure
 medical-equipment-manager/
@@ -51,7 +53,6 @@ No external dependencies required. The database file `data.db` is created automa
 
 ## Roadmap
 
-- [ ] REST API with FastAPI
 - [ ] Web interface (HTML/CSS/JS)
 - [ ] User authentication
 - [ ] Docker support
