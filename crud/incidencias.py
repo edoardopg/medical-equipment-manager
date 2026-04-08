@@ -19,6 +19,6 @@ class Incidencias:
         self.cursor.execute('''DELETE FROM incidencias WHERE id_incidencia=?''',(id_incidencia,))
         self.conn.commit()
     def buscar_por_id(self,id_incidencia):
-        self.cursor.execute('''SELECT * FROM incidencias WHERE id_incidencia=?''',(id_incidencia,))
+        self.cursor.execute('''SELECT incidencias.*, equipos_medicos.nombre FROM incidencias JOIN equipos_medicos ON incidencias.id_equipo = equipos_medicos.id_equipos WHERE id_incidencia=?''',(id_incidencia,))
         return self.cursor.fetchone()
     
