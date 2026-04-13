@@ -2,7 +2,6 @@ from models import create_table, insert_initial_data #importo funciones crear ta
 from crud.equipos import Equipos # importo la clase Equipos del CRUD
 from crud.incidencias import Incidencias #importo la clase Incidencias del CRUD
 from datetime import datetime 
-
 def main():
     create_table()
     insert_initial_data()

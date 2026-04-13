@@ -3,8 +3,17 @@ from crud.equipos import Equipos #importo el archivo equipos que contine CRUD
 from pydantic import BaseModel #importo librería para recoger valores y hacer post y put
 from crud.incidencias import Incidencias
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class EquipoSchema(BaseModel): #creo clase Schema para recoger losd atos
     nombre: str
     tipo: str

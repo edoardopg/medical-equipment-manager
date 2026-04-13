@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Equipment Manager</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #333;
+        padding: 40px;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 30px;
+        color: #2c3e50;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #2c3e50;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    th {
+        background-color: #2c3e50;
+        color: white;
+        padding: 12px 16px;
+        text-align: left;
+    }
+
+    td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #eee;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-right: 10px;
+        font-size: 14px;
+        width: 200px;
+    }
+
+    button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    button[type="submit"] {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    button[onclick] {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    form {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+</style>
+</head>
+<body>
+    <h1>Equipos Médicos</h1>
+    
+    <section>
+        
+        <table id="tabla-equipos">
+            <h3>Añadir nuevo equipo</h3>
+            <form id="form-equipo">
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="tipo" placeholder="Tipo" required>
+                <input type="text" id="ubicacion" placeholder="Ubicación" required>
+                <button type="submit">Añadir equipo</button>
+            </form>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Ubicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <h2>Equipos Médicos</h2>
+            <tbody>
+                <!-- aquí se cargarán los equipos dinámicamente -->
+            </tbody>
+        </table>
+    </section>
+    <section>
+    <h3>Añadir nueva incidencia</h3>
+    <form id="form-incidencia">
+        <input type="number" id="id_equipo" placeholder="ID del equipo" required>
+        <input type="text" id="tipo_error" placeholder="Tipo de error" required>
+        <input type="text" id="descripcion" placeholder="Descripción" required>
+        <button type="submit">Añadir incidencia</button>
+    </form>
+    <h2>Incidencias</h2>
+    <table id="tabla-incidencias">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Equipo</th>
+                <th>Tipo de error</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</section>
+<script>
+    async function cargarEquipos() {
+        const response = await fetch("http://127.0.0.1:8000/equipos");
+        const equipos = await response.json();
+        
+        const tbody = document.getElementById("tabla-equipos").querySelector("tbody");
+        tbody.innerHTML = "";
+        
+        equipos.forEach(e => {
+            const fila = `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.nombre}</td>
+                    <td>${e.tipo}</td>
+                    <td>${e.ubicacion}</td>
+                    <td><button onclick="eliminarEquipo(${e.id})">Eliminar</button></td>
+                </tr>
+            `;
+            tbody.innerHTML += fila;
+        });
+    }
+async function eliminarEquipo(id) {
+    await fetch(`http://127.0.0.1:8000/equipos/${id}`, {
+        method: "DELETE"
+    });
+    cargarEquipos();
+}
+document.getElementById("form-equipo").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    
+    const datos = {
+        nombre: document.getElementById("nombre").value,
+        tipo: document.getElementById("tipo").value,
+        ubicacion: document.getElementById("ubicacion").value
+    };
+    
+    await fetch("http://127.0.0.1:8000/equipos", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(datos)
+    });
+    
+    cargarEquipos();
+    this.reset();
+});
+async function cargarIncidencias() {
+    const response = await fetch("http://127.0.0.1:8000/incidencias");
+    const incidencias = await response.json();
+    
+    const tbody = document.getElementById("tabla-incidencias").querySelector("tbody");
+    tbody.innerHTML = "";
+    
+    incidencias.forEach(i => {
+        const fila = `
+            <tr>
+                <td>${i.id_incidencia}</td>
+                <td>${i.nombre_equipo}</td>
+                <td>${i.tipo_error}</td>
+                <td>${i.descripcion}</td>
+                <td>${i.fecha}</td>
+                <td><button onclick="eliminarIncidencia(${i.id_incidencia})">Eliminar</button></td>
+            </tr>
+        `;
+        tbody.innerHTML += fila;
+    });
+}
+
+async function eliminarIncidencia(id) {
+    await fetch(`http://127.0.0.1:8000/incidencias/${id}`, {
+        method: "DELETE"
+    });
+    cargarIncidencias();
+}
+
+document.getElementById("form-incidencia").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    
+    const datos = {
+        id_equipo: parseInt(document.getElementById("id_equipo").value),
+        tipo_error: document.getElementById("tipo_error").value,
+        descripcion: document.getElementById("descripcion").value
+    };
+    
+    await fetch("http://127.0.0.1:8000/incidencias", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(datos)
+    });
+    
+    cargarIncidencias();
+    this.reset();
+});
+    cargarEquipos();
+    cargarIncidencias();
+</script>
+</body>
+</html>
