@@ -94,21 +94,34 @@
         flex-wrap: wrap;
         gap: 10px;
     }
+    header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    }
+    button.logout {
+        background-color: #e74c3c;
+        color: white;
+    }   
 </style>
 </head>
 <body>
-    <h1>Equipos Médicos</h1>
-    <button onclick="logout()">Cerrar sesión</button>
+<body>
+    <header>
+        <h1>Medical Equipment Manager</h1>
+        <button class="logout" onclick="logout()">Cerrar sesión</button>
+    </header>
+
     <section>
-        
+        <h2>Equipos Médicos</h2>
+        <form id="form-equipo">
+            <input type="text" id="nombre" placeholder="Nombre" required>
+            <input type="text" id="tipo" placeholder="Tipo" required>
+            <input type="text" id="ubicacion" placeholder="Ubicación" required>
+            <button type="submit">Añadir equipo</button>
+        </form>
         <table id="tabla-equipos">
-            <h3>Añadir nuevo equipo</h3>
-            <form id="form-equipo">
-                <input type="text" id="nombre" placeholder="Nombre" required>
-                <input type="text" id="tipo" placeholder="Tipo" required>
-                <input type="text" id="ubicacion" placeholder="Ubicación" required>
-                <button type="submit">Añadir equipo</button>
-            </form>
             <thead>
                 <tr>
                     <th>ID</th>
@@ -118,36 +131,32 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <h2>Equipos Médicos</h2>
-            <tbody>
-                <!-- aquí se cargarán los equipos dinámicamente -->
-            </tbody>
+            <tbody></tbody>
         </table>
     </section>
+
     <section>
-    <h3>Añadir nueva incidencia</h3>
-    <form id="form-incidencia">
-        <input type="number" id="id_equipo" placeholder="ID del equipo" required>
-        <input type="text" id="tipo_error" placeholder="Tipo de error" required>
-        <input type="text" id="descripcion" placeholder="Descripción" required>
-        <button type="submit">Añadir incidencia</button>
-    </form>
-    <h2>Incidencias</h2>
-    <table id="tabla-incidencias">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Equipo</th>
-                <th>Tipo de error</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</section>
+        <h2>Incidencias</h2>
+        <form id="form-incidencia">
+            <input type="number" id="id_equipo" placeholder="ID del equipo" required>
+            <input type="text" id="tipo_error" placeholder="Tipo de error" required>
+            <input type="text" id="descripcion" placeholder="Descripción" required>
+            <button type="submit">Añadir incidencia</button>
+        </form>
+        <table id="tabla-incidencias">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Equipo</th>
+                    <th>Tipo de error</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
 <script>
     async function cargarEquipos() {
         const response = await fetch("http://127.0.0.1:8000/equipos");

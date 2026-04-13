@@ -17,6 +17,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+SECRET_KEY = "clave_secreta_muy_larga_y_segura"
+ALGORITHM = "HS256"
 
 class EquipoSchema(BaseModel): #creo clase Schema para recoger losd atos
     nombre: str
@@ -28,8 +30,6 @@ class IncidenciaSchema(BaseModel):
     tipo_error: str
     descripcion: str
 
-SECRET_KEY = "clave_secreta_muy_larga_y_segura"
-ALGORITHM = "HS256"
 class LoginSchema(BaseModel):
     username: str
     password: str
