@@ -2,8 +2,12 @@ from fastapi import FastAPI #importo libreria para la API
 from crud.equipos import Equipos #importo el archivo equipos que contine CRUD
 from pydantic import BaseModel #importo librería para recoger valores y hacer post y put
 from crud.incidencias import Incidencias
-from datetime import datetime
+from datetime import datetime,timedelta
 from fastapi.middleware.cors import CORSMiddleware
+from database import get_connection
+import bcrypt
+from jose import jwt
+
 
 app = FastAPI()
 
@@ -23,6 +27,37 @@ class IncidenciaSchema(BaseModel):
     id_equipo: int
     tipo_error: str
     descripcion: str
+
+SECRET_KEY = "clave_secreta_muy_larga_y_segura"
+ALGORITHM = "HS256"
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+
+@app.post("/login")
+def login(datos: LoginSchema):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM usuarios WHERE username=?''',(datos.username,))
+    usuario = cursor.fetchone()
+    conn.close()
+
+    if usuario is None:
+        return {"error": "Usuario no encontrado"}
+    
+    password_correcta = bcrypt.checkpw(
+        datos.password.encode("utf-8"),
+        usuario[2].encode("utf-8")
+    )
+    if not password_correcta:
+        return {"error": "Contraseña inconrrecta"}
+    
+    token = jwt.encode(
+        {"sub": datos.username, "exp": datetime.utcnow() + timedelta(hours=8)},
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+    return {"access_token": token}
 
 @app.get("/") #ruta raíz de la API, devuelve un mensaje de bienvenida
 def root():

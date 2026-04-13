@@ -98,7 +98,7 @@
 </head>
 <body>
     <h1>Equipos Médicos</h1>
-    
+    <button onclick="logout()">Cerrar sesión</button>
     <section>
         
         <table id="tabla-equipos">
@@ -240,8 +240,16 @@ document.getElementById("form-incidencia").addEventListener("submit", async func
     cargarIncidencias();
     this.reset();
 });
+const token = localStorage.getItem("token");
+if (!token) {
+    window.location.href = "login.html";
+}
     cargarEquipos();
     cargarIncidencias();
+function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+}
 </script>
 </body>
 </html>

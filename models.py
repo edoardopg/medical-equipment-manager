@@ -1,4 +1,5 @@
 from database import get_connection
+import bcrypt
 
 def create_table():
     conn = get_connection()
@@ -21,6 +22,13 @@ def create_table():
             FOREIGN KEY (id_equipo) REFERENCES equipos_medicos (id_equipos)
             )
             ''')
+    cursor.execute('''
+            CREATE TABLE IF NOT EXISTS usuarios(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT
+            )
+            ''')
     conn.commit()
     conn.close()
 
@@ -38,5 +46,17 @@ def insert_initial_data():
                     ('ESPECTROFOTOMETRO_2', 'Espectrofotómetro', 'Sala de Espectrofotómetros')
                 ''')
     conn.commit()
+    conn.close()
+
+
+def create_admin():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM usuarios")
+    count = cursor.fetchone()[0]
+    if count == 0:
+        hashed = bcrypt.hashpw("admin123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")        
+        cursor.execute("INSERT INTO usuarios (username, password) VALUES (?,?)", ("admin", hashed))
+        conn.commit()
     conn.close()
         
