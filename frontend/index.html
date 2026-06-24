@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Equipment Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        input, select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .error {
+            background-color: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .success {
+            background-color: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border-left: 4px solid #3c3;
+            display: none;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏥 Medical Equipment Manager</h1>
+        <button class="logout-btn" onclick="showLogoutModal()">Cerrar sesión</button>
+    </header>
+
+    <div class="container">
+        <!-- EQUIPOS -->
+        <section>
+            <h2>Equipos Médicos</h2>
+            
+            <div class="error" id="error-equipment"></div>
+            <div class="success" id="success-equipment"></div>
+
+            <div class="form-group">
+                <input type="text" id="eq-name" placeholder="Nombre del equipo" required>
+                <input type="text" id="eq-type" placeholder="Tipo" required>
+                <input type="text" id="eq-location" placeholder="Ubicación" required>
+                <button class="btn btn-primary" onclick="addEquipment()">Añadir equipo</button>
+            </div>
+
+            <table id="equipment-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Ubicación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="5" class="no-data">Cargando equipos...</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- INCIDENCIAS -->
+        <section>
+            <h2>Incidencias</h2>
+            
+            <div class="error" id="error-incidents"></div>
+            <div class="success" id="success-incidents"></div>
+
+            <div class="form-group">
+                <input type="number" id="inc-equipment-id" placeholder="ID del equipo" required>
+                <input type="text" id="inc-type" placeholder="Tipo de error" required>
+                <input type="text" id="inc-description" placeholder="Descripción" required>
+                <button class="btn btn-primary" onclick="addIncident()">Añadir incidencia</button>
+            </div>
+
+            <table id="incidents-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Equipo</th>
+                        <th>Tipo de error</th>
+                        <th>Descripción</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="no-data">Cargando incidencias...</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; padding: 30px; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <h3 style="font-size: 18px; font-weight: 600; color: #2c3e50; margin-bottom: 12px;" id="modalTitle">Confirmar acción</h3>
+            <p style="font-size: 14px; color: #7f8c8d; margin-bottom: 24px;" id="modalMessage">¿Estás seguro?</p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn" id="cancelBtn" style="background: #ecf0f1; color: #2c3e50;" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-danger" id="confirmBtn" onclick="executeAction()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000";
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.href = "login.html";
+        }
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        };
+
+        let pendingAction = null;
+
+        function openModal(title, message, action, buttonText = "Confirmar", buttonStyle = "btn-danger") {
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalMessage").textContent = message;
+    const confirmBtn = document.getElementById("confirmBtn");
+    confirmBtn.textContent = buttonText;
+    confirmBtn.className = `btn ${buttonStyle}`;
+    pendingAction = action;
+    document.getElementById("confirmModal").style.display = "flex";
+}
+
+        function closeModal() {
+            document.getElementById("confirmModal").style.display = "none";
+            pendingAction = null;
+        }
+
+        function executeAction() {
+            if (pendingAction) {
+                pendingAction();
+            }
+            closeModal();
+        }
+
+        async function loadEquipment() {
+            try {
+                const response = await fetch(`${API_URL}/equipments`, { headers });
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    window.location.href = "login.html";
+                    return;
+                }
+                const equipment = await response.json();
+                const tbody = document.querySelector("#equipment-table tbody");
+                
+                if (!Array.isArray(equipment) || equipment.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="no-data">No hay equipos registrados</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = equipment.map(e => `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.name}</td>
+                        <td>${e.type}</td>
+                        <td>${e.location}</td>
+                        <td><button class="btn btn-danger" onclick="showDeleteEquipmentModal(${e.id})">Eliminar</button></td>
+                    </tr>
+                `).join("");
+            } catch (error) {
+                console.error("Error loading equipment:", error);
+            }
+        }
+
+        async function addEquipment() {
+            const name = document.getElementById("eq-name").value;
+            const type = document.getElementById("eq-type").value;
+            const location = document.getElementById("eq-location").value;
+
+            if (!name || !type || !location) {
+                showError("error-equipment", "Por favor rellena todos los campos");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/equipments`, {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify({ name, type, location })
+                });
+
+                if (response.ok) {
+                    showSuccess("success-equipment", "Equipo añadido correctamente");
+                    document.getElementById("eq-name").value = "";
+                    document.getElementById("eq-type").value = "";
+                    document.getElementById("eq-location").value = "";
+                    loadEquipment();
+                } else {
+                    showError("error-equipment", "Error al añadir el equipo");
+                }
+            } catch (error) {
+                showError("error-equipment", "Error de conexión");
+            }
+        }
+
+        function showDeleteEquipmentModal(id) {
+            openModal(
+                "Eliminar equipo",
+                "¿Estás seguro de que deseas eliminar este equipo?",
+                () => deleteEquipment(id)
+            );
+        }
+
+        async function deleteEquipment(id) {
+            try {
+                const response = await fetch(`${API_URL}/equipments/${id}`, {
+                    method: "DELETE",
+                    headers
+                });
+
+                if (response.ok) {
+                    showSuccess("success-equipment", "Equipo eliminado");
+                    loadEquipment();
+                } else {
+                    showError("error-equipment", "Error al eliminar el equipo");
+                }
+            } catch (error) {
+                showError("error-equipment", "Error de conexión");
+            }
+        }
+
+        async function loadIncidents() {
+            try {
+                const response = await fetch(`${API_URL}/incidents`, { headers });
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    window.location.href = "login.html";
+                    return;
+                }
+                const incidents = await response.json();
+                const tbody = document.querySelector("#incidents-table tbody");
+                
+                if (!Array.isArray(incidents) || incidents.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="no-data">No hay incidencias registradas</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = incidents.map(i => `
+                    <tr>
+                        <td>${i.id_incident}</td>
+                        <td>${i.equipment_name}</td>
+                        <td>${i.type_error}</td>
+                        <td>${i.description}</td>
+                        <td>${i.date}</td>
+                        <td><button class="btn btn-danger" onclick="showDeleteIncidentModal(${i.id_incident})">Eliminar</button></td>
+                    </tr>
+                `).join("");
+            } catch (error) {
+                console.error("Error loading incidents:", error);
+            }
+        }
+
+        async function addIncident() {
+            const id_equipment = parseInt(document.getElementById("inc-equipment-id").value);
+            const type_error = document.getElementById("inc-type").value;
+            const description = document.getElementById("inc-description").value;
+
+            if (!id_equipment || !type_error || !description) {
+                showError("error-incidents", "Por favor rellena todos los campos");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/incidents`, {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify({ id_equipment, type_error, description })
+                });
+
+                if (response.ok) {
+                    showSuccess("success-incidents", "Incidencia añadida correctamente");
+                    document.getElementById("inc-equipment-id").value = "";
+                    document.getElementById("inc-type").value = "";
+                    document.getElementById("inc-description").value = "";
+                    loadIncidents();
+                } else {
+                    showError("error-incidents", "Error al añadir la incidencia");
+                }
+            } catch (error) {
+                showError("error-incidents", "Error de conexión");
+            }
+        }
+
+        function showDeleteIncidentModal(id) {
+            openModal(
+                "Eliminar incidencia",
+                "¿Estás seguro de que deseas eliminar esta incidencia?",
+                () => deleteIncident(id)
+            );
+        }
+
+        async function deleteIncident(id) {
+            try {
+                const response = await fetch(`${API_URL}/incidents/${id}`, {
+                    method: "DELETE",
+                    headers
+                });
+
+                if (response.ok) {
+                    showSuccess("success-incidents", "Incidencia eliminada");
+                    loadIncidents();
+                } else {
+                    showError("error-incidents", "Error al eliminar la incidencia");
+                }
+            } catch (error) {
+                showError("error-incidents", "Error de conexión");
+            }
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = "block";
+            setTimeout(() => el.style.display = "none", 4000);
+        }
+
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = "block";
+            setTimeout(() => el.style.display = "none", 3000);
+        }
+
+        function showLogoutModal() {
+    openModal(
+        "Cerrar sesión",
+        "¿Estás seguro de que deseas cerrar sesión?",
+        logout,
+        "Cerrar sesión",
+        "btn-primary"
+    );
+}
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        }
+
+        loadEquipment();
+        loadIncidents();
+    </script>
+</body>
+</html>

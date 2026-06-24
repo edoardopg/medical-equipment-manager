@@ -1,88 +1,201 @@
 # Medical Equipment Manager
 
-Full-stack system for managing medical equipment and incidents in a clinical environment, built with Python, FastAPI and SQLite.
+Sistema de gestión de equipos médicos e incidencias con autenticación JWT y API REST.
 
-## About
+## 🎯 Descripción
 
-This project was built as a portfolio piece during my transition from **Biomedical Engineering** to **Software Development**. Having worked hands-on with medical equipment from companies like Siemens Healthineers, Roche, Bruker, Sysmex, Inpeco and Edwards Lifesciences, I designed this system based on real-world needs in clinical environments.
+Aplicación full-stack para registrar, controlar y gestionar equipos médicos e incidencias en laboratorios o centros de salud. Incluye sistema de autenticación completo con login, registro, recuperación de contraseña y gestión de incidencias asociadas a equipos.
 
-## Features
+## ✨ Características
 
-- Full CRUD for medical equipment and incidents via REST API
-- JWT authentication with login and session protection
-- Automatic incident timestamping
-- Input validation and error handling
-- Relational database with foreign key constraints
-- SQL JOIN queries to display enriched incident data
-- Web interface with HTML, CSS and JavaScript
+- **Autenticación JWT** — Login seguro con tokens de 8 horas
+- **Sistema de registro** — Registro de nuevos usuarios con validación
+- **Recuperación de contraseña** — Reset vía email con token de 30 minutos
+- **Bloqueo por intentos** — Bloqueo después de 3 intentos fallidos
+- **CRUD Completo** — Crear, leer, actualizar y eliminar equipos e incidencias
+- **API REST** — Endpoints protegidos con autenticación
+- **Frontend responsivo** — Interfaz moderna con modal personalizado
+- **Base de datos relacional** — SQLite con 3 tablas (equipos, incidencias, usuarios)
 
-## Tech Stack
+## 🛠 Stack Técnico
 
-- **Python 3.12** — OOP, modular architecture
-- **FastAPI** — REST API framework
-- **Uvicorn** — ASGI server
-- **SQLite3** — relational database
-- **JWT (python-jose)** — authentication
-- **bcrypt** — password hashing
-- **HTML/CSS/JavaScript** — frontend
+**Backend:**
+- Python 3.12+
+- FastAPI
+- SQLite
+- JWT (PyJWT)
+- bcrypt (hashing de contraseñas)
+- SMTP (Gmail para emails)
 
-## Project Structure
-medical-equipment-manager/
-│
-├── database.py          # Database connection
-├── models.py            # Table creation and initial data
-├── main.py              # Entry point
-├── api.py               # REST API endpoints
-├── login.html           # Login page
-├── index.html           # Main dashboard
-│
-└── crud/
-├── init.py
-├── equipos.py       # Equipment CRUD class
-└── incidencias.py   # Incidents CRUD class
-## Requirements
+**Frontend:**
+- HTML5
+- CSS3
+- JavaScript vanilla
+- LocalStorage para tokens
 
-- Python 3.8 or higher
-- Install dependencies:
+## 📋 Requisitos
 
+- Python 3.12+
+- pip
+- Un email de Gmail (para reset de contraseña)
+
+## 🚀 Instalación y Setup
+
+### 1. Clonar el repositorio
 ```bash
-pip install fastapi uvicorn python-jose bcrypt
+git clone https://github.com/tu-usuario/P_1_Equipos_Medicos.git
+cd P_1_Equipos_Medicos
 ```
 
-## How to Run
-
-Clone the repository:
-
+### 2. Crear entorno virtual
 ```bash
-git clone https://github.com/edoardopg/medical-equipment-manager.git
-cd medical-equipment-manager
+python3 -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
 ```
 
-Initialize the database:
-
+### 3. Instalar dependencias
 ```bash
-python main.py
+pip install fastapi uvicorn python-jose bcrypt python-dotenv python-multipart pydantic
 ```
 
-Start the API server:
+### 4. Configurar variables de entorno
+Crea un archivo `.env` en la raíz del proyecto:
+```env
+SECRET_KEY=long_secret_key_and_secure_change_this_in_production
+ALGORITHM=HS256
+DATABASE_URL=sqlite:///./medical.db
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASSWORD=tu_contraseña_app
+FRONTEND_URL=http://127.0.0.1:5500
+```
 
+**Para la contraseña de Gmail:**
+1. Ve a https://myaccount.google.com/apppasswords
+2. Selecciona Mail + tu dispositivo
+3. Copia la contraseña de aplicación (sin espacios)
+
+### 5. Ejecutar la API
 ```bash
 uvicorn api:app --reload
 ```
 
-Open `login.html` with Live Server and log in with:
-- **Username:** admin
-- **Password:** admin123
+La API estará disponible en `http://127.0.0.1:8000`
 
-## Roadmap
+### 6. Abrir el frontend
+1. Abre `frontend/index.html` con Live Server en VS Code
+2. O manualmente en `http://127.0.0.1:5500/frontend/login.html`
 
-- [x] REST API with FastAPI
-- [x] Web interface (HTML/CSS/JS)
-- [x] JWT authentication
-- [ ] Deploy to Railway/Render
-- [ ] Docker support
+## 📂 Estructura del Proyecto
 
-## Author
+```
+P_1_Equipos_Medicos/
+│
+├── crud/                      # Lógica de base de datos
+│   ├── equipments.py
+│   ├── incidents.py
+│   └── users.py
+│
+├── routers/                   # Endpoints de la API
+│   ├── equipments.py
+│   ├── incidents.py
+│   └── users.py
+│
+├── utils/                     # Funciones auxiliares
+│   ├── security.py           # Hashing y tokens
+│   └── email.py              # Envío de emails
+│
+├── frontend/                  # Interfaz del usuario
+│   ├── login.html
+│   ├── register.html
+│   ├── forgot-password.html
+│   ├── reset-password.html
+│   └── index.html
+│
+├── database.py               # Configuración de BD
+├── models.py                 # Definición de tablas
+├── api.py                    # Aplicación FastAPI
+├── .env                      # Variables de entorno
+├── .gitignore
+└── README.md
+```
 
-Edoardo — Biomedical Engineer transitioning to Software Development.  
-[GitHub](https://github.com/edoardopg)
+## 🔑 Credenciales de Prueba
+
+**Usuario admin (creado automáticamente):**
+- Username: `admin`
+- Password: `admin123`
+
+## 📡 Endpoints API
+
+### Autenticación
+- `POST /register` — Registro de nuevo usuario
+- `POST /login` — Login (devuelve JWT token)
+- `POST /forgot-password` — Solicitar reset de contraseña
+- `POST /reset-password` — Actualizar contraseña con token
+- `DELETE /delete-account` — Eliminar cuenta (requiere token)
+
+### Equipos (requieren JWT)
+- `GET /equipments` — Listar todos los equipos
+- `GET /equipments/{id}` — Obtener equipo por ID
+- `POST /equipments` — Crear nuevo equipo
+- `PUT /equipments/{id}` — Actualizar equipo
+- `DELETE /equipments/{id}` — Eliminar equipo
+
+### Incidencias (requieren JWT)
+- `GET /incidents` — Listar todas las incidencias
+- `GET /incidents/{id}` — Obtener incidencia por ID
+- `POST /incidents` — Crear nueva incidencia
+- `PUT /incidents/{id}` — Actualizar incidencia
+- `DELETE /incidents/{id}` — Eliminar incidencia
+
+## 🔐 Autenticación
+
+Todos los endpoints de equipos e incidencias requieren un JWT token en el header:
+
+```bash
+curl -H "Authorization: Bearer TOKEN_AQUI" http://localhost:8000/equipments
+```
+
+El frontend maneja esto automáticamente guardando el token en `localStorage`.
+
+## 🎨 Características de UI
+
+- **Modal personalizado** para confirmaciones
+- **Mensajes de error y éxito** visuales
+- **Diseño responsive** con gradientes modernos
+- **Protección de sesión** — Redirige a login si no hay token
+
+## 🚧 Próximas mejoras
+
+- [ ] Bot de Telegram para notificaciones
+- [ ] Deploy en Render con PostgreSQL
+- [ ] Panel de administración
+- [ ] Exportar datos a Excel/PDF
+- [ ] Historial de cambios en equipos
+- [ ] Filtrado y búsqueda avanzada
+- [ ] Roles de usuario (admin, técnico, viewer)
+
+## 🐛 Troubleshooting
+
+**Error CORS:**
+- Verifica que el frontend esté en `http://127.0.0.1:5500`
+- Asegúrate de que la API está corriendo en `http://127.0.0.1:8000`
+
+**Email no llega:**
+- Comprueba que `EMAIL_PASSWORD` no tiene espacios
+- Verifica que es una contraseña de aplicación de Gmail, no tu contraseña normal
+- Revisa la carpeta de spam
+
+**Token expirado:**
+- El token dura 8 horas
+- Si expira, vuelve a hacer login
+
+## 👤 Autor
+
+Edoardo — Backend Developer en transición
+
+## 📜 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia MIT.
