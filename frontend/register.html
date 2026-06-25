@@ -169,6 +169,7 @@
     <script>
         document.getElementById("registerForm").addEventListener("submit", async function(event) {
             event.preventDefault();
+            event.stopPropagation();
             const errorDiv = document.getElementById("error");
             const successDiv = document.getElementById("success");
             
