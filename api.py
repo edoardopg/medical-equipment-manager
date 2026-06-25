@@ -26,10 +26,15 @@ def startup_event():
     insert_initial_data()
     create_admin()
 
-# Servir frontend como SPA (Single Page Application)
-# Servir frontend estático
 if os.path.exists("frontend"):
-    app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+    @app.get("/{full_path:path}")
+    def serve_spa(full_path: str):
+        # Si el archivo existe, sírvelo
+        file_path = f"frontend/{full_path}"
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        # Si no, sirve index.html (para que el frontend maneje la ruta)
+        return FileResponse("frontend/index.html")
 
 if __name__ == "__main__":
     import uvicorn
