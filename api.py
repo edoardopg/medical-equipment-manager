@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import equipments,incidents,users
 from models import create_table,insert_initial_data,create_admin
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os 
+
 
 app = FastAPI()
 app.add_middleware(
@@ -21,6 +25,14 @@ def startup_event():
     create_table()
     insert_initial_data()
     create_admin()
+
+# Servir archivos estáticos del frontend
+if os.path.exists("frontend"):
+    app.mount("/static", StaticFiles(directory="frontend"), name="static")
+    
+    @app.get("/")
+    def serve_index():
+        return FileResponse("frontend/index.html")
 
 if __name__ == "__main__":
     import uvicorn
