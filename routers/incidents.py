@@ -2,7 +2,9 @@ from fastapi import APIRouter,Depends
 from routers.users import verify_token
 from pydantic import BaseModel
 from crud.incidents import Incidents
-from datetime import datetime 
+from crud.equipments import Equipments
+from datetime import datetime
+from utils.telegram import send_incident_notification
 
 router = APIRouter()
 
@@ -46,9 +48,13 @@ def get_incident_id(id:int, current_user=Depends(verify_token)):
 @router.post("/incidents") #ruta para crear una nueva incidencia, recibe un JSON con los datos de la nueva incidencia, si se crea correctamente devuelve un mensaje de éxito, si da error devuelve un mensaje de error
 def post_incident(data: IncidentSchema, current_user=Depends(verify_token)):
     incidents = Incidents()
+    equipments = Equipments()
     date = datetime.now().strftime("%Y-%m-%d")
     incidents.insert(data.id_equipment,date,data.type_error,data.description)
-    return {"message": "Incident create successfully"}
+    equipment = equipments.find_by_id(data.id_equipment)
+    equipment_name = equipment[1] if equipment else "Unknown"  # Obtener el nombre del equipo usando el ID del equipo
+    send_incident_notification(equipment_name, data.type_error, data.description)
+    return {"message": "Incident created successfully"}
 
 @router.delete("/incidents/{id}") #ruta para eliminar una incidencia,busca la incidencia por su id, si la encuentra la borra sino manda un mensaje de error (not found)
 def delete_incident(id:int,current_user=Depends(verify_token)):
