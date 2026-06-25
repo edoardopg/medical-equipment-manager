@@ -26,12 +26,14 @@ def startup_event():
     insert_initial_data()
     create_admin()
 
-# Servir archivos estáticos del frontend
+# Servir frontend como SPA (Single Page Application)
 if os.path.exists("frontend"):
-    app.mount("/static", StaticFiles(directory="frontend"), name="static")
-    
-    @app.get("/")
-    def serve_index():
+    @app.get("/{full_path:path}")
+    def serve_frontend(full_path: str):
+        # Si es una ruta de la API, no la sirvas como frontend
+        if full_path.startswith("api") or full_path.startswith("equipments") or full_path.startswith("incidents") or full_path.startswith("register") or full_path.startswith("login") or full_path.startswith("forgot") or full_path.startswith("reset"):
+            return {"error": "not found"}
+        # Si no, sirve el index.html (el frontend maneja la navegación)
         return FileResponse("frontend/index.html")
 
 if __name__ == "__main__":
