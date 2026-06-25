@@ -27,14 +27,9 @@ def startup_event():
     create_admin()
 
 # Servir frontend como SPA (Single Page Application)
+# Servir frontend estático
 if os.path.exists("frontend"):
-    @app.get("/{full_path:path}")
-    def serve_frontend(full_path: str):
-        # Si es una ruta de la API, no la sirvas como frontend
-        if full_path.startswith("api") or full_path.startswith("equipments") or full_path.startswith("incidents") or full_path.startswith("register") or full_path.startswith("login") or full_path.startswith("forgot") or full_path.startswith("reset"):
-            return {"error": "not found"}
-        # Si no, sirve el index.html (el frontend maneja la navegación)
-        return FileResponse("frontend/index.html")
+    app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
