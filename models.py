@@ -31,7 +31,8 @@ def create_table():
                 failed_attempts INTEGER DEFAULT 0,
                 block INTEGER DEFAULT 0,
                 token_reset TEXT,
-                token_expires TEXT
+                token_expires TEXT,
+                email_verified INTEGER DEFAULT 0
                 )
                 ''')
     conn.commit()

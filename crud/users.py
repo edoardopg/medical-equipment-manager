@@ -37,3 +37,9 @@ class Users:
     def delete_account(self,username):
         self.cursor.execute('''DELETE FROM users WHERE username=?''',(username,))
         self.conn.commit()
+    def verify_email(self,email):
+        self.cursor.execute('''UPDATE users SET email_verified=1 WHERE email=?''',(email,))
+        self.cursor.commit()
+    def find_by_verification_token(self, token):
+        self.cursor.execute('''SELECT * FROM users WHERE token_reset=? AND email_verified=0''', (token,))
+        return self.cursor.fetchone()

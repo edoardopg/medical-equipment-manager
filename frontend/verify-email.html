@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Email — Medical Equipment Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .error {
+            background-color: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .success {
+            background-color: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #3c3;
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #667eea;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading">
+            <div class="icon">📧</div>
+            <h1>Verificando email...</h1>
+            <div class="loading"></div>
+        </div>
+
+        <div id="success" class="success">
+            <div class="icon">✅</div>
+            <h1>¡Email verificado!</h1>
+            <p>Tu email ha sido verificado exitosamente. Ahora puedes iniciar sesión.</p>
+            <a href="login.html" class="btn">Ir a Login</a>
+        </div>
+
+        <div id="error" class="error">
+            <div class="icon">❌</div>
+            <h1>Error de verificación</h1>
+            <p id="error-message">Algo salió mal. El link puede haber expirado.</p>
+            <a href="register.html" class="btn" style="background: #e74c3c;">Registrarse de nuevo</a>
+        </div>
+    </div>
+
+    <script>
+        async function verifyEmail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get("token");
+
+            if (!token) {
+                showError("Token no encontrado");
+                return;
+            }
+
+            try {
+                const response = await fetch("/verify-email?token=" + token);
+                const data = await response.json();
+
+                if (response.ok && data.message) {
+                    showSuccess();
+                } else {
+                    showError(data.error || "Error desconocido");
+                }
+            } catch (error) {
+                showError("Error de conexión");
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("success").style.display = "block";
+        }
+
+        function showError(message) {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("error").style.display = "block";
+            document.getElementById("error-message").textContent = message;
+        }
+
+        verifyEmail();
+    </script>
+</body>
+</html>

@@ -191,12 +191,12 @@
                 const data = await response.json();
 
                 if (response.ok && data.message) {
-                    successDiv.textContent = "Cuenta creada. Redirigiendo...";
+                    successDiv.textContent = "Cuenta creada. Revisa tu email para verificar.";
                     successDiv.style.display = "block";
                     setTimeout(() => {
                         window.location.href = "login.html";
-                    }, 1500);
-                } else {
+                    }, 3000);
+                }else {
                     errorDiv.textContent = data.error || "Error al crear la cuenta";
                     errorDiv.style.display = "block";
                 }

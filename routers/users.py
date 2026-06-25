@@ -5,7 +5,7 @@ from crud.users import Users
 from pydantic import BaseModel
 from datetime import datetime,timedelta
 from utils.security import verify_password,hash_password,generate_reset_token,get_expiration_time
-from utils.email import send_reset_email
+from utils.email import send_reset_email,send_verification_email
 from dotenv import load_dotenv
 import os
 
@@ -45,6 +45,9 @@ def register(data: RegisterSchema):
         return {"error": "email already exists"}
     hashed = hash_password(data.password)
     users.register(data.username,data.email,hashed)
+    token = generate_reset_token()
+    users.save_reset_token(data.email,token,get_expiration_time())
+    send_verification_email(data.email,token)
     return {"message": "user registered successfully"}
 
 
@@ -93,6 +96,17 @@ def reset_password(data: ResetPasswordSchema):
     users.unblock_user(user[1])
     users.reset_attempts(user[1])
     return {"message":"update password successfully"}
+
+@router.get("/verify-email")
+def verify_email(token:str):
+    users = Users()
+    user = users.find_by_verification_token(token)
+    if not user:
+        return {"error": "token not found"}
+    if datetime.now() > datetime.fromisoformat(str(user[7])):
+        return {"error": "Link expired"}
+    users.verify_email(user[2])  # user[2] es el email
+    return {"message": "email verified successfully"}
 
 @router.delete("/delete-account")
 def delete_account(usuario=Depends(verify_token)):
