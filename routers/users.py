@@ -57,8 +57,13 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     user = users.find_by_username(data.username)
     if user is None:
         return {"error": "user not found"}
+    
     if user[5] == 1:
         return {"error": "User is blocked, reset your password to unlock"}
+    
+    if user[8] == 0:
+        return {"error": "Email not verified, check your inbox for verification email"}
+
     if not verify_password(data.password, user[3]):
         users.increment_attempts(data.username)
         user_updated = users.find_by_username(data.username)
