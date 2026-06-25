@@ -6,11 +6,14 @@ from pydantic import BaseModel
 from datetime import datetime,timedelta
 from utils.security import verify_password,hash_password,generate_reset_token,get_expiration_time
 from utils.email import send_reset_email
+from dotenv import load_dotenv
+import os
 
 router = APIRouter()
+load_dotenv()
 
-SECRET_KEY = "long_secret_key_and_secure"
-ALGORITHM = "HS256"
+SECRET_KEY = os.getenv("SECRET_KEY")  # ← Cambia esto
+ALGORITHM = os.getenv("ALGORITHM")  
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
